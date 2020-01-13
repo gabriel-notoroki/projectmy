@@ -1,0 +1,405 @@
+#include <stdio.h>
+#include <locale.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+#include <unistd.h>
+#include <conio.h>
+
+int atualizar_codigo();
+
+//---------------variaveis globais----------------
+int codigo_vendedor = atualizar_codigo();
+int definir_variavel = 0;
+int contador_quanti_funcio=0;
+typedef struct
+{
+	char data_dia[3];
+    char data_mes[3];
+    char data_ano[5];
+}data;
+//---------------estrutura  com informações do funcionario----------------
+typedef struct
+{
+    int codigo;        
+    char nome[100]; 
+    char cargo[50]; 
+    char sexo[15];  
+    int telefone;
+    int ativo;   
+} fun;
+
+//---------------estrutura  com informações do produto----------------
+typedef struct
+{
+    char codigo_produto[20];
+    char descricao_produto[30];
+    char unidade[10];
+    char quant_em_estoque[10];
+    char quant_min_estoque[10];
+    char data_entrada[12];
+    char preco[10];
+} produto;
+
+//---------------estrutura  com informações da venda----------------
+typedef struct
+{
+    char codigo_venda[20];
+    char codigo_produto_vendido[10];
+    char valor_venda[30];
+    char quantidade[10];
+    data venda;
+} venda;
+
+
+//---------------protótipos das funções----------------
+void menu_principal();         
+void sub_menu(int *escolha); 
+void menu_funcionario();
+void menu_produtos();
+void funcionarios(int *escolha_menu_funcionario);
+void produtos(int *escolha_menu_produto);
+void inserir_funcionarios();
+void menu_vendas();
+void vendas(int *escolha_menu_vendas);
+void listar_funcionario();
+void tratar_texto(char *texto);
+int tirar_numero_nome(char *nome);
+int verificar_sexo(char *sexo);
+void remover();
+int main()
+{
+    setlocale(LC_ALL, "Portuguese");
+    atualizar_codigo();        //resgata o útimo código do funcionario para manter atualizado.
+    do
+    {
+        menu_principal(); // chama o menu principal e consequentemente todo o resto do programa.
+    } while (1);
+    
+}
+void menu_principal()
+{
+    sleep(1);
+    system("cls");
+    int opcao_menu;
+    printf(" ________________________________________________\n");
+    printf("|                 Sistema da Loja                |\n");
+    printf("|________________________________________________|\n");
+    printf("|    1 - Gerir Funcionarios                      |\n");
+    printf("|    2 - Gerir Produtos                          |\n");
+    printf("|    3 - Gerir Vendas                            |\n");
+    printf("|    4 - Gerar Relatorio                         |\n");
+    printf("|    5 - Sair da Aplicacao                       |\n\n\n");
+    printf(" ________________________________________________\n");
+    printf("| Entre com a opcao desejada: ");
+    scanf("%d", &opcao_menu);
+    system("cls");
+    fflush(stdin);
+    sub_menu(&opcao_menu);
+}
+//funcao do sub_menu para escolha
+void sub_menu(int *escolha)
+{
+    
+    switch (*escolha)
+    {
+    case 1:
+        menu_funcionario();
+        break;
+    case 2:
+        menu_produtos();
+        break;
+    case 3:
+        menu_vendas();
+        break;
+    case 4:
+        //    relatorios();
+        break;
+    case 5:
+        exit(1);
+        break;
+    default:
+        printf("não é uma opção\n");
+    }
+}
+void menu_funcionario()
+{
+    int  opcao_menu_funcionario;
+    system("cls");
+    printf(" ________________________________________________\n");
+    printf("|              Gestão de Funcionario             |\n");
+    printf("|________________________________________________|\n");
+    printf("|    1 - Inserir novo funcionario                |\n");
+    printf("|    2 - Remover funcionario                     |\n");
+    printf("|    3 - Consultar                               |\n");
+    printf("|    4 - Editar funcionario                      |\n");
+    printf("|    5 - Listar todos                            |\n");
+    printf("|    6 - Voltar ao menu principal                |\n\n\n");
+
+    printf(" ________________________________________________\n");
+    printf("| Entre com a opcao desejada: ");
+    scanf("%d", &opcao_menu_funcionario);
+    fflush(stdin);
+    printf("|________________________________________________|\n");
+    funcionarios(&opcao_menu_funcionario);
+}
+void funcionarios(int *escolha_menu_funcionario)
+{
+    switch (*escolha_menu_funcionario)
+    {
+    case 1:
+        inserir_funcionarios();
+        break;
+    case 2:
+        remover();
+        break;
+    case 3:
+
+        break;
+    case 4:
+
+        break;
+    case 5:
+        listar_funcionario();
+        break;
+    case 6:
+        system("cls");
+        return;
+        break;
+
+    default:
+        printf("opção inválida\n");
+    }
+}
+
+void inserir_funcionarios()
+{
+	char continuar;
+	int i = 1;
+    int aux= atualizar_codigo();
+    
+   FILE *arquivo = fopen("funcionarios.bin", "ab");
+    fflush(stdin);
+    fun *funcionario;
+    funcionario = (fun *)malloc(i * sizeof(fun));
+    
+        do{  
+			fflush(stdin); 
+			 funcionario[aux].ativo = 1;	
+            //do{
+            	system("cls");
+            	printf("Nome do funcionário (sem inserir numeros ou caracteres): ");
+            	fgets(funcionario[aux].nome, 100, stdin);
+           	 	tratar_texto(funcionario[aux].nome);
+           // }while(tirar_numero_nome(funcionario[aux].nome) == 1);
+            
+           // do{
+            	printf("Sexo do funcionário: ");
+            	fgets(funcionario[aux].sexo, 15, stdin);
+            	tratar_texto(funcionario[aux].sexo);
+        //	}while(verificar_sexo(funcionario[aux].sexo) == 1);
+        	
+            printf("cargo do funcionário: ");
+            fgets(funcionario[aux].cargo, 50, stdin);
+            tratar_texto(funcionario[aux].cargo);
+            printf("telefone do funcionário: ");
+            scanf("%d", &funcionario[aux].telefone);
+            fflush(stdin);
+            funcionario[aux].codigo = ++codigo_vendedor;  
+            printf("Continuar inserindo?(s/n): ");
+            scanf(" %c", &continuar);
+            fflush(stdin);
+            ++contador_quanti_funcio;
+            ++i;
+            ++aux;
+            funcionario = (fun *)realloc(funcionario, i *sizeof(fun));
+        }while(continuar == 's');
+        
+    fwrite(funcionario, sizeof(fun),contador_quanti_funcio,arquivo);
+    fclose(arquivo);
+    
+    fflush(stdin);
+    system("cls");
+}
+void listar_funcionario()
+{
+	FILE *arquivo = fopen("funcionarios.bin", "rb");
+	fun funcionario;
+	fread(&funcionario, sizeof(fun),contador_quanti_funcio ,arquivo);
+		if(funcionario.ativo == 1){
+			printf("nome: %s\n", funcionario.nome);
+			printf("sexo: %s\n", funcionario.sexo);
+			printf("cargo: %s\n", funcionario.cargo);
+			printf("telefone: %d\n", funcionario.telefone);
+			printf("codigo: %d\n", funcionario.codigo);
+			printf("======================================");
+		}
+		getchar();
+	fclose(arquivo);
+}
+//função para remover funcionario
+void remover(){
+    int excluir;
+ 
+  /* for (int i= 0; i<codigo_vendedor; i++){
+        if(excluir == funcionario[i].codigo){
+            for(int j = i; j<codigo_vendedor-1; j++){
+                strcpy(funcionario[j].nome ,funcionario[j+1].nome);
+                strcpy(funcionario[j].cargo ,funcionario[j+1].cargo);
+                strcpy(funcionario[j].sexo ,funcionario[j+1].sexo);
+                funcionario[j].telefone =funcionario[j+1].telefone;
+                funcionario[j].codigo =funcionario[j+1].codigo;
+            }
+        }
+        --codigo_vendedor;
+    	    break;
+    fclose(arquivo);*/
+}
+//função do menu do produtos
+void menu_produtos()
+{
+    int opcao_menu_produto;
+    printf(" ________________________________________________\n");
+    printf("|              Gestão de produto                 |\n");
+    printf("|________________________________________________|\n");
+    printf("|    1 - Inserir novo produto                    |\n");
+    printf("|    2 - Remover produto                         |\n");
+    printf("|    3 - Consultar  produto                      |\n");
+    printf("|    4 - Editar produto                          |\n");
+    printf("|    5 - Listar todos os produtos                |\n");
+    printf("|    6 - Voltar ao menu principal                |\n\n\n");
+
+    printf(" ________________________________________________\n");
+    printf("| Entre com a opcao desejada: ");
+    scanf("%d", &opcao_menu_produto);
+    printf("|________________________________________________|\n");
+
+    produtos(&opcao_menu_produto);
+}
+
+//função para chamar as operações de vendas
+void produtos(int *escolha_menu_produto)
+{
+    switch (*escolha_menu_produto)
+    {
+    case 1:
+
+        break;
+    case 2:
+
+        break;
+    case 3:
+
+        break;
+    case 4:
+
+        break;
+    case 5:
+
+        break;
+    case 6:
+        system("cls");
+        return;
+        break;
+
+    default:
+        printf("opção inválida!");
+    }
+}
+//função do menu de vendas
+void menu_vendas()
+{
+    int opcao_menu_vendas;
+    printf(" ________________________________________________\n");
+    printf("|              Gestão de vendas                  |\n");
+    printf("|________________________________________________|\n");
+    printf("|    1 - Iniciar vendas                          |\n");
+    printf("|    2 - Remover produto                         |\n");
+    printf("|    3 - Consultar  produto                      |\n");
+    printf("|    4 - Editar produto                          |\n");
+    printf("|    5 - Listar todos os produtos                |\n");
+    printf("|    6 - Voltar ao menu principal                |\n\n\n");
+
+    printf(" ________________________________________________\n");
+    printf("| Entre com a opcao desejada: ");
+    scanf("%d", &opcao_menu_vendas);
+    printf("|________________________________________________|\n");
+
+    vendas(&opcao_menu_vendas);
+}
+//função para chamar as operações de vendas
+void vendas(int *escolha_menu_vendas)
+{
+    switch (*escolha_menu_vendas)
+    {
+    case 1:
+
+        break;
+    case 2:
+
+        break;
+    case 3:
+
+        break;
+    case 4:
+
+        break;
+    case 5:
+
+        break;
+    case 6:
+        system("cls");
+        return;
+        break;
+
+    default:
+        printf("opção inválida!");
+    }
+}
+//função para tratar o texto
+void tratar_texto(char *texto)
+{
+    if (texto[strlen(texto) - 1] == '\n')
+        texto[strlen(texto) - 1] = '\0';
+    fflush(stdin);
+}
+//função para resgatar o último código atribuido para que ao fechar e abrir novamente o programa, não perda o valor das variáveis
+int atualizar_codigo(){
+    int *codigo_v = &codigo_vendedor;
+    codigo_v = &codigo_vendedor;
+    FILE *arquivo;
+        fun funcionario;
+        arquivo = fopen("funcionarios.bin", "rb");
+    if (arquivo != NULL){
+        while (fread(&funcionario, sizeof(fun), 1, arquivo) == 1)//roda até conseguir ler uma linha
+        {
+            *codigo_v = funcionario.codigo;        //resgata o codigo enquanto não chega o fim do arquivo
+        }
+    }
+    else
+            *codigo_v = 0;
+        return *codigo_v;
+}
+
+int tirar_numero_nome(char *nome){
+	for(int i = 0; nome[i]; i++){
+		if(nome[i] != ' ')
+			nome[i] = toupper(nome[i]);
+		if(nome[i] >=65 && nome[i]<=90 || nome[i] == ' ')
+			continue;
+		else
+			return 1;
+	}
+	return 0;
+}
+
+int verificar_sexo(char *sexo){
+	for(int i = 0; sexo[i]; i++){
+		sexo[i]=tolower(sexo[i]);
+	}
+	if(!strcmp(sexo, "feminino") ||!strcmp(sexo, "masculino"))
+		return 1;
+			
+	return 0;
+}
